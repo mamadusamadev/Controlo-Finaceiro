@@ -1,2 +1,3 @@
 const name = ''
-console.log(name)
+const apelido = ''
+console.log(name, apelido)
