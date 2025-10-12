@@ -1,18 +1,21 @@
 {
-  "name": "finance-app-api",
-  "version": "1.0.0",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "Mamadu Sama",
-  "license": "ISC",
-  "description": "",
-  "devDependencies": {
-    "@eslint/js": "^9.37.0",
-    "eslint": "^9.37.0",
-    "globals": "^16.4.0"
-  }
+    "name": "finance-app-api",
+    "version": "1.0.0",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "postinstall": "npx husky install"
+    },
+    "keywords": [],
+    "author": "Mamadu Sama",
+    "license": "ISC",
+    "description": "",
+    "devDependencies": {
+        "@eslint/js": "^9.37.0",
+        "eslint": "^9.37.0",
+        "globals": "^16.4.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^16.2.4"
+    }
 }
