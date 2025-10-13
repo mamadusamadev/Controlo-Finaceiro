@@ -9,6 +9,7 @@ export const pool = new Pool({
     host: process.env.POSTGRES_HOST,
 })
 
+// HELPER PARA CONECTAR COM BANCO DE DADOS
 export const PostgresHelper = {
     query: async (query, params) => {
         const client = await pool.connect()
