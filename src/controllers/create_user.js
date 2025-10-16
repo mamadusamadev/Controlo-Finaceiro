@@ -1,5 +1,6 @@
 import { CreateUserUseCase } from '../use_case/create_user.js'
 import validator from 'validator'
+import { EmailAllradyExisted } from '../errors/user.js'
 
 import { badRequest, created, iternaServerError } from './helpers.js'
 
@@ -49,6 +50,9 @@ export class CreateUserController {
                 message: 'user created succesfuly! ',
             })
         } catch (error) {
+            if (error instanceof EmailAllradyExisted) {
+                return badRequest({ message: error.message })
+            }
             console.log(error)
 
             return iternaServerError({
