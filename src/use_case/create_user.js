@@ -1,10 +1,22 @@
 import { v4 as uuidv4 } from 'uuid'
 import { PostgresCreateUserRepository } from '../repositories/postgres/create_user.js'
 import bcrypt from 'bcrypt'
+import { PostgresGetUserByEmailRepository } from '../repositories/postgres/get_user_by_email.js'
 
 export class CreateUserUseCase {
     async execute(CreateUserParams) {
-        // TODO verifica se o email já está em uso
+        //verifica se o email já está em uso
+        const postgresgetUserByEmailRepository =
+            new PostgresGetUserByEmailRepository()
+
+        const userWithProvidEmail =
+            await postgresgetUserByEmailRepository.execute(
+                CreateUserParams.email,
+            )
+
+        if (userWithProvidEmail) {
+            throw new Error('The Provide email is in Use.')
+        }
 
         // gerar id de usuario
         const userId = uuidv4()
