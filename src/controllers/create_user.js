@@ -24,9 +24,9 @@ export class CreateUserController {
                 }
             }
 
-            const passwordIsValed = params.password.length < 6
+            const passwordIsNotValed = params.password.length < 6
 
-            if (passwordIsValed) {
+            if (passwordIsNotValed) {
                 return badRequest({
                     message: `Palavra passe deve ser maior ou igual a 6 caracteres`,
                 })

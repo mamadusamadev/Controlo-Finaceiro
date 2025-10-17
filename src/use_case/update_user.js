@@ -18,6 +18,7 @@ export class UpdateUserUsecase {
         if (userWithProvidEmail) {
             throw new EmailAllradyExisted()
         }
+
         const user = {
             ...updateUserParams,
         }
@@ -31,6 +32,7 @@ export class UpdateUserUsecase {
 
             user.password = hashedPassword
         }
+
         // chamar repository para atualizar usuario
         const postgresUpdateUserRepository = new PostgresUpdateUserRepository()
         const updateUser = await postgresUpdateUserRepository.execute(
