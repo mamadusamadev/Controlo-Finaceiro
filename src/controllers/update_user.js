@@ -1,11 +1,21 @@
-import { badRequest, iternaServerError } from './helpers'
+import { badRequest, iternaServerError } from './helpers.js'
 import validator from 'validator'
 import { EmailAllradyExisted } from '../errors/user.js'
+import { UpdateUserUsecase } from '../use_case/update_user.js'
+
+import { notFound } from './helpers.js'
 
 export class UpdateUserController {
     async execute(httpRequest) {
         try {
             const updateUserParams = httpRequest.body
+            const userId = httpRequest.params.userId
+
+            if (!userId) {
+                return notFound({
+                    message: 'The User is Not Found',
+                })
+            }
 
             const allowedFields = [
                 'first_name',
@@ -18,9 +28,21 @@ export class UpdateUserController {
                 (field) => !allowedFields.includes(field),
             )
 
-            if (!someFieldIsNotAllowed) {
+            if (someFieldIsNotAllowed) {
                 return badRequest({
                     message: 'Some Provide Field is not allowed ',
+                })
+            }
+
+            const hasEmptyAllowedField = Object.keys(updateUserParams).some(
+                (field) =>
+                    allowedFields.includes(field) &&
+                    updateUserParams[field] === '',
+            )
+
+            if (hasEmptyAllowedField) {
+                return badRequest({
+                    message: 'Some provided field is empty',
                 })
             }
 
@@ -43,11 +65,22 @@ export class UpdateUserController {
                     })
                 }
             }
+
+            const updateUserUseCase = new UpdateUserUsecase()
+
+            const updateUser = await updateUserUseCase.execute(
+                userId,
+                updateUserParams,
+            )
+            return {
+                statusCode: 200,
+                body: updateUser,
+            }
         } catch (error) {
             if (error instanceof EmailAllradyExisted) {
                 return badRequest({ message: error.message })
             }
-
+            console.log(error)
             return iternaServerError({
                 message: 'Internal server error',
             })

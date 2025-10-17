@@ -3,6 +3,7 @@ import { PostgresGetUserByEmailRepository } from '../repositories/postgres/get_u
 import { EmailAllradyExisted } from '../errors/user.js'
 
 import { PostgresUpdateUserRepository } from '../repositories/postgres/udate_user.js'
+
 export class UpdateUserUsecase {
     async execute(userId, updateUserParams) {
         // se o email estiver sendo atualizado, verifica se ele está sendo em uso.
@@ -15,7 +16,7 @@ export class UpdateUserUsecase {
                 updateUserParams.email,
             )
 
-        if (userWithProvidEmail) {
+        if (userWithProvidEmail && userWithProvidEmail.id !== userId) {
             throw new EmailAllradyExisted()
         }
 

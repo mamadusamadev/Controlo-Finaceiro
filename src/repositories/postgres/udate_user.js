@@ -7,7 +7,7 @@ export class PostgresUpdateUserRepository {
 
         Object.keys(updateUserParams).forEach((key) => {
             updateFieds.push(`${key} = $${updateValues.length + 1} `)
-            updateValues.push(updateUserParams(key))
+            updateValues.push(updateUserParams[key])
         })
 
         updateValues.push(userId)
