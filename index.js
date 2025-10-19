@@ -1,9 +1,12 @@
 import 'dotenv/config.js'
 
 import express from 'express'
-import { CreateUserController } from './src/controllers/create_user.js'
-import { GetUserByIdController } from './src/controllers/get_user_by_id.js'
-import { UpdateUserController } from './src/controllers/update_user.js'
+import {
+    CreateUserController,
+    GetUserByIdController,
+    UpdateUserController,
+    DeleteUserController,
+} from './src/controllers/index.js'
 
 const app = express()
 app.use(express.json())
@@ -27,6 +30,11 @@ app.patch('/api/users/:userId', async (request, response) => {
     response.status(statusCode).send(body)
 })
 
+app.delete('/api/users/:userId', async (req, res) => {
+    const deleteUserController = new DeleteUserController()
+    const { statusCode, body } = await deleteUserController.execute(req)
+    res.status(statusCode).send(body)
+})
 app.listen(process.env.PORT, () =>
     console.log(`Server is runing in port ${process.env.PORT}`),
 )

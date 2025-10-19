@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
 import { PostgresGetUserByEmailRepository } from '../repositories/postgres/get_user_by_email.js'
-import { EmailAllradyExisted } from '../errors/user.js'
+import { EmailAllradyExisted } from '../errors/index.js'
 
 import { PostgresUpdateUserRepository } from '../repositories/postgres/udate_user.js'
 

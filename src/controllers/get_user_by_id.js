@@ -1,5 +1,5 @@
-import { GetUserByIdUseCase } from '../use_case/get_user_by_id.js'
-import { iternaServerError, notFound } from './helpers.js'
+import { GetUserByIdUseCase } from '../use_case/index.js'
+import { iternaServerError, notFound } from './helpers/http.js'
 
 export class GetUserByIdController {
     async execute(httpRequest) {

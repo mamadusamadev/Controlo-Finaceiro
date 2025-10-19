@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
+
 import { PostgresCreateUserRepository } from '../repositories/postgres/create_user.js'
 import bcrypt from 'bcrypt'
 import { PostgresGetUserByEmailRepository } from '../repositories/postgres/get_user_by_email.js'

@@ -25,3 +25,11 @@ export const notFound = (body) => {
         body,
     }
 }
+
+export const noContent = (body) => {
+    return {
+        statusCode: 204,
+
+        body,
+    }
+}

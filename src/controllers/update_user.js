@@ -1,9 +1,8 @@
-import { badRequest, iternaServerError } from './helpers.js'
 import validator from 'validator'
+import { badRequest, iternaServerError, notFound } from './helpers/http.js'
 import { EmailAllradyExisted } from '../errors/user.js'
-import { UpdateUserUsecase } from '../use_case/update_user.js'
 
-import { notFound } from './helpers.js'
+import { UpdateUserUsecase } from '../use_case/update_user.js'
 
 export class UpdateUserController {
     async execute(httpRequest) {

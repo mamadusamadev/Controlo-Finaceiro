@@ -1,8 +1,9 @@
-import { CreateUserUseCase } from '../use_case/create_user.js'
 import validator from 'validator'
-import { EmailAllradyExisted } from '../errors/user.js'
 
-import { badRequest, created, iternaServerError } from './helpers.js'
+import { badRequest, created, iternaServerError } from './helpers/http.js'
+import { CreateUserUseCase } from '../use_case/index.js'
+import { invalidPasswordResponse } from './helpers/index.js'
+import { EmailAllradyExisted } from '../errors/index.js'
 
 export class CreateUserController {
     async execute(httpRequest) {
@@ -27,9 +28,7 @@ export class CreateUserController {
             const passwordIsNotValed = params.password.length < 6
 
             if (passwordIsNotValed) {
-                return badRequest({
-                    message: `Palavra passe deve ser maior ou igual a 6 caracteres`,
-                })
+                invalidPasswordResponse()
             }
 
             const emailIsValed = validator.isEmail(params.email)
