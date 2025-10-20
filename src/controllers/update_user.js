@@ -2,9 +2,11 @@ import validator from 'validator'
 import { badRequest, iternaServerError, notFound } from './helpers/http.js'
 import { EmailAllradyExisted } from '../errors/user.js'
 
-import { UpdateUserUsecase } from '../use_case/update_user.js'
-
 export class UpdateUserController {
+    constructor(updateUserUsecase) {
+        this.updateUserUseCase = updateUserUsecase
+    }
+
     async execute(httpRequest) {
         try {
             const updateUserParams = httpRequest.body
@@ -65,9 +67,9 @@ export class UpdateUserController {
                 }
             }
 
-            const updateUserUseCase = new UpdateUserUsecase()
+            // chamar use case para executar
 
-            const updateUser = await updateUserUseCase.execute(
+            const updateUser = await this.updateUserUseCase.execute(
                 userId,
                 updateUserParams,
             )
