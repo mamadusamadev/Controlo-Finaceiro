@@ -1,11 +1,14 @@
 import validator from 'validator'
 
 import { badRequest, created, iternaServerError } from './helpers/http.js'
-import { CreateUserUseCase } from '../use_case/index.js'
+
 import { invalidPasswordResponse } from './helpers/index.js'
 import { EmailAllradyExisted } from '../errors/index.js'
 
 export class CreateUserController {
+    constructor(createUserUseCase) {
+        this.createUserUseCase = createUserUseCase
+    }
     async execute(httpRequest) {
         try {
             const params = httpRequest.body
@@ -40,8 +43,8 @@ export class CreateUserController {
             }
 
             // chamar use case
-            const createUserUseCase = new CreateUserUseCase()
-            const createdUser = await createUserUseCase.execute(params)
+
+            const createdUser = await this.createUserUseCase.execute(params)
             // retornar a resposta para usuario (status code)
 
             return created({

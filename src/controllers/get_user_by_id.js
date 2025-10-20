@@ -1,12 +1,13 @@
-import { GetUserByIdUseCase } from '../use_case/index.js'
 import { iternaServerError, notFound } from './helpers/http.js'
 
 export class GetUserByIdController {
+    // injetando a dependencia (passando a classe como parametro ao invez de importar)
+    constructor(getUserByIdUseCase) {
+        this.getuserByIdController = getUserByIdUseCase
+    }
     async execute(httpRequest) {
         try {
-            const getUserByIdUseCase = new GetUserByIdUseCase()
-
-            const user = await getUserByIdUseCase.execute(
+            const user = await this.getuserByIdController.execute(
                 httpRequest.params.userId,
             )
             if (!user) {

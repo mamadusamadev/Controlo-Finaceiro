@@ -1,35 +1,35 @@
-import { GetUserByIdUseCase, DeleteUserUseCase } from '../use_case/index.js'
-
 import { iternaServerError, notFound, noContent } from './helpers/http.js'
 
 export class DeleteUserController {
+    constructor(deleteUserUseCase, getUserByIdUseCase) {
+        this.deleteUserUseCase = deleteUserUseCase
+        this.getUserByIdUseCase = getUserByIdUseCase
+    }
     async execute(httpRequest) {
         try {
-            const deleteUserUseCase = new DeleteUserUseCase()
-            const getUserByIdUseCase = new GetUserByIdUseCase()
+            const userId = httpRequest.params.userId
 
-            const userId = httpRequest.params.userId // ← pega o ID
+            // Verifica se o userId foi fornecido
+            if (!userId) {
+                return notFound({
+                    message: 'User ID is required',
+                })
+            }
 
-            const user = await getUserByIdUseCase.execute(userId)
+            // Verifica se o usuário existe ANTES de tentar deletar
+            const user = await this.getUserByIdUseCase.execute(userId)
 
-            if (!user || !userId) {
+            if (!user) {
                 return notFound({
                     message: 'The User is Not Found',
                 })
             }
 
-            const userDeleted = await deleteUserUseCase.execute(userId) // ← passa o ID, não user
-            if (!userDeleted) {
-                return notFound({
-                    message: 'The User is Not Found',
-                })
-            }
-            return noContent({
-                body: {
-                    message: 'Usuario Deletado com sucesso!',
-                    userDeleted,
-                },
-            })
+            // Se o usuário existe, deleta
+            await this.deleteUserUseCase.execute(userId)
+
+            // Retorna sucesso (204 No Content não deve ter body)
+            return noContent()
         } catch (error) {
             console.log(error)
             return iternaServerError()
