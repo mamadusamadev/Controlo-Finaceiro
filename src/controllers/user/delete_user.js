@@ -1,4 +1,4 @@
-import { iternaServerError, notFound, noContent } from './helpers/http.js'
+import { iternaServerError, notFound, noContent } from '../helpers/http.js'
 
 export class DeleteUserController {
     constructor(deleteUserUseCase, getUserByIdUseCase) {

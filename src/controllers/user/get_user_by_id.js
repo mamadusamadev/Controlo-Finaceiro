@@ -1,4 +1,4 @@
-import { iternaServerError, notFound } from './helpers/http.js'
+import { iternaServerError, notFound } from '../helpers/http.js'
 
 export class GetUserByIdController {
     // injetando a dependencia (passando a classe como parametro ao invez de importar)

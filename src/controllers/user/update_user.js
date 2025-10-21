@@ -1,6 +1,6 @@
 import validator from 'validator'
-import { badRequest, iternaServerError, notFound } from './helpers/http.js'
-import { EmailAllradyExisted } from '../errors/user.js'
+import { badRequest, iternaServerError, notFound } from '../helpers/http.js'
+import { EmailAllradyExisted } from '../../errors/user.js'
 
 export class UpdateUserController {
     constructor(updateUserUsecase) {

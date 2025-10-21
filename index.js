@@ -41,6 +41,9 @@ app.delete('/api/users/:userId', async (req, res) => {
     const { statusCode, body } = await deleteUserController.execute(req)
     res.status(statusCode).send(body)
 })
+
+// The transactions endpoint
+
 app.listen(process.env.PORT, () =>
     console.log(`Server is runing in port ${process.env.PORT}`),
 )
