@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-import { EmailAllradyExisted } from '../errors/index.js'
+import { EmailAllradyExisted } from '../../errors/index.js'
 
 export class UpdateUserUsecase {
     constructor(

@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import bcrypt from 'bcrypt'
 
-import { EmailAllradyExisted } from '../errors/user.js'
+import { EmailAllradyExisted } from '../../errors/user.js'
 
 export class CreateUserUseCase {
     constructor(
