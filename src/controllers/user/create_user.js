@@ -4,6 +4,7 @@ import { badRequest, created, iternaServerError } from '../helpers/http.js'
 
 import { invalidPasswordResponse } from '../helpers/index.js'
 import { EmailAllradyExisted } from '../../errors/index.js'
+import { validateRequireFile } from '../helpers/validations.js'
 
 export class CreateUserController {
     constructor(createUserUseCase) {
@@ -20,13 +21,9 @@ export class CreateUserController {
                 'password',
             ]
 
-            for (const field of requiredFields) {
-                if (!params[field] || params[field].trim().length === 0) {
-                    return badRequest({
-                        message: `Missing param: ${field}`,
-                    })
-                }
-            }
+            // chamar funçao que valida os campos
+
+            validateRequireFile(params, requiredFields)
 
             const passwordIsNotValed = params.password.length < 6
 

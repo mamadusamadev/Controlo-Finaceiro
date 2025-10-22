@@ -1,5 +1,6 @@
 import { iternaServerError, badRequest, created } from '../helpers/http.js'
 import { checkIfIdIsValid, invalidIdResponse } from '../helpers/users.js'
+import { validateRequireFile } from '../helpers/validations.js'
 
 export class CreateTransactionController {
     constructor(createTransactionUseCase) {
@@ -13,22 +14,7 @@ export class CreateTransactionController {
             // Validar campos obrigatórios
             const requiredFields = ['user_id', 'name', 'date', 'amount', 'type']
 
-            for (const field of requiredFields) {
-                if (!params[field]) {
-                    return badRequest({
-                        message: `Missing param: ${field}`,
-                    })
-                }
-
-                if (
-                    typeof params[field] === 'string' &&
-                    params[field].trim().length === 0
-                ) {
-                    return badRequest({
-                        message: `Missing param: ${field}`,
-                    })
-                }
-            }
+            validateRequireFile(params, requiredFields)
 
             // Validar user_id
             const userIdIsValid = checkIfIdIsValid(params.user_id)
