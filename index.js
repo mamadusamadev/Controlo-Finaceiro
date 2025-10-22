@@ -8,6 +8,7 @@ import {
     makeDeleteUserController,
 } from './src/factories/controllers/user.js'
 
+import { makeCreateTransactionController } from './src/factories/controllers/transaction.js'
 const app = express()
 app.use(express.json())
 
@@ -43,6 +44,12 @@ app.delete('/api/users/:userId', async (req, res) => {
 })
 
 // The transactions endpoint
+
+app.post('/api/transactions', async (req, res) => {
+    const createTransactionController = makeCreateTransactionController()
+    const { statusCode, body } = await createTransactionController.execute(req)
+    res.status(statusCode).send(body)
+})
 
 app.listen(process.env.PORT, () =>
     console.log(`Server is runing in port ${process.env.PORT}`),

@@ -1,73 +1,107 @@
-import { iternaServerError, badRequest, created } from '../helpers/http'
-import { checkIfIdIsValid, invalidIdResponse } from '../helpers/users'
-import validator from 'validator'
+import { iternaServerError, badRequest, created } from '../helpers/http.js'
+import { checkIfIdIsValid, invalidIdResponse } from '../helpers/users.js'
+
 export class CreateTransactionController {
     constructor(createTransactionUseCase) {
         this.createTransactionUseCase = createTransactionUseCase
     }
+
     async execute(httpRequest) {
         try {
             const params = httpRequest.body
 
-            // validar a requesiçao(campos obrigatorios e tamanhos da senha e email)
+            // Validar campos obrigatórios
             const requiredFields = ['user_id', 'name', 'date', 'amount', 'type']
 
             for (const field of requiredFields) {
-                if (!params[field] || params[field].trim().length === 0) {
+                if (!params[field]) {
+                    return badRequest({
+                        message: `Missing param: ${field}`,
+                    })
+                }
+
+                if (
+                    typeof params[field] === 'string' &&
+                    params[field].trim().length === 0
+                ) {
                     return badRequest({
                         message: `Missing param: ${field}`,
                     })
                 }
             }
 
-            const userIdIsValid = checkIfIdIsValid(params.user.id)
-
+            // Validar user_id
+            const userIdIsValid = checkIfIdIsValid(params.user_id)
             if (!userIdIsValid) {
                 return invalidIdResponse()
             }
 
-            if (params.amount < 0) {
+            // Validar date (formato YYYY-MM-DD)
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/
+            if (!dateRegex.test(params.date)) {
                 return badRequest({
-                    message: 'The amount mast to be greater than 0.',
+                    message:
+                        'The date must be in the format YYYY-MM-DD (e.g., 2025-10-22).',
                 })
             }
 
-            const amountIsValid = validator.isCurrency(
-                params.amount.toString(),
-                {
-                    digits_after_decimal: [2],
-                    allow_decimal: false,
-                    decimal_separator: '.',
-                },
-            )
-
-            if (!amountIsValid) {
+            // Validar se é uma data válida
+            const date = new Date(params.date)
+            if (isNaN(date.getTime())) {
                 return badRequest({
-                    message: 'The amount must to be a valid currency.',
+                    message: 'The date is invalid.',
                 })
             }
 
-            const type = params.type.trim().toUperCase()
+            // Validar amount
+            const amount =
+                typeof params.amount === 'string'
+                    ? parseFloat(params.amount)
+                    : params.amount
 
-            const typeValid = !['EARNING', 'EXPENSE', 'INVESTMENT'].includes(
+            if (isNaN(amount) || amount <= 0) {
+                return badRequest({
+                    message: 'The amount must be greater than 0.',
+                })
+            }
+
+            // Validar casas decimais (máximo 2)
+            const decimalPlaces = (amount.toString().split('.')[1] || '').length
+            if (decimalPlaces > 2) {
+                return badRequest({
+                    message: 'The amount must have at most 2 decimal places.',
+                })
+            }
+
+            // Validar type
+            const type = params.type.trim().toUpperCase()
+            const typeValid = ['EARNING', 'EXPENSE', 'INVESTMENT'].includes(
                 type,
             )
 
             if (!typeValid) {
                 return badRequest({
                     message:
-                        'The  transaction type must to be "EARNING", "EXPENSE", or "INVESTMENT"',
+                        'The transaction type must be "EARNING", "EXPENSE", or "INVESTMENT"',
                 })
             }
 
+            // Criar transação com dados validados
+            const transactionParams = {
+                ...params,
+                amount: amount,
+                type: type,
+            }
+
             const transaction =
-                await this.createTransactionUseCase.execute(params)
+                await this.createTransactionUseCase.execute(transactionParams)
+
             return created({
-                transactions: transaction,
-                message: 'Transaction created succesfuly! ',
+                transaction: transaction,
+                message: 'Transaction created successfully!',
             })
         } catch (error) {
-            console.error(error)
+            console.error('Error in CreateTransactionController:', error)
             return iternaServerError()
         }
     }
