@@ -33,3 +33,10 @@ export const noContent = (body) => {
         body,
     }
 }
+
+export const ok = (body) => {
+    return {
+        statusCode: 200,
+        body,
+    }
+}

@@ -1,5 +1,11 @@
 import { badRequest } from './http.js'
 
+export const requiredFileIsMissingResponse = (field) => {
+    badRequest({
+        message: `The File ${field} is Required`,
+    })
+}
+
 export const validateRequireFile = (params, requiredFields) => {
     // Validar campos obrigatórios
 
