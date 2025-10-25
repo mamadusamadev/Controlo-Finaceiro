@@ -85,9 +85,7 @@ export class UpdateUserController {
                 return badRequest({ message: error.message })
             }
             console.log(error)
-            return iternaServerError({
-                message: 'Internal server error',
-            })
+            return iternaServerError()
         }
     }
 }
