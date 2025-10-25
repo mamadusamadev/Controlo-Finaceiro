@@ -91,6 +91,12 @@ export class UpdateTransactionController {
                 params,
             )
 
+            if (!transaction) {
+                return badRequest({
+                    message: 'Transaction not found',
+                })
+            }
+
             return ok(transaction)
         } catch (error) {
             if (error instanceof EmailAllradyExisted) {

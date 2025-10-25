@@ -1,5 +1,5 @@
 import validator from 'validator'
-import { badRequest, iternaServerError, notFound } from '../helpers/http.js'
+import { badRequest, iternaServerError, notFound, ok } from '../helpers/http.js'
 import { EmailAllradyExisted } from '../../errors/user.js'
 
 export class UpdateUserController {
@@ -73,10 +73,13 @@ export class UpdateUserController {
                 userId,
                 updateUserParams,
             )
-            return {
-                statusCode: 200,
-                body: updateUser,
+
+            if (!updateUser) {
+                return badRequest({
+                    message: 'User not found',
+                })
             }
+            return ok(updateUser)
         } catch (error) {
             if (error instanceof EmailAllradyExisted) {
                 return badRequest({ message: error.message })
