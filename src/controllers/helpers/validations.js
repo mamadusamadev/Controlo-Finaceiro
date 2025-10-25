@@ -32,3 +32,5 @@ export const validateRequireFile = (params, requiredFields) => {
 export const isValidUUID = (id) => {
     return validator.isUUID(id)
 }
+
+//

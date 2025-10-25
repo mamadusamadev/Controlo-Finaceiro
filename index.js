@@ -71,6 +71,15 @@ app.patch('/api/transactions/:transactionId', async (req, res) => {
     res.status(statusCode).send(body)
 })
 
+app.delete('/api/transactions/:transactionId', async (req, res) => {
+    const { makeDeleteTransactionController } = await import(
+        './src/factories/controllers/transaction.js'
+    )
+    const deleteTransactionController = makeDeleteTransactionController()
+    const { statusCode, body } = await deleteTransactionController.execute(req)
+    res.status(statusCode).send(body)
+})
+
 app.listen(process.env.PORT, () =>
     console.log(`Server is runing in port ${process.env.PORT}`),
 )

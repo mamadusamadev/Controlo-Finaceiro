@@ -12,10 +12,12 @@ export const created = (body) => {
     }
 }
 
-export const iternaServerError = (body) => {
+export const iternaServerError = () => {
     return {
         statusCode: 500,
-        body,
+        body: {
+            message: 'Internal Server Error',
+        },
     }
 }
 
