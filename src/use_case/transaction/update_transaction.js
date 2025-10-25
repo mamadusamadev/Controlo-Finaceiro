@@ -1,27 +1,15 @@
-import { UserNotFounError } from '../../errors/index.js'
-
 export class UpdateTransactionUseCase {
-    constructor(
-        postgresUpdateTransactionsRepository,
-        postgresGetUserByIdRepository,
-    ) {
+    constructor(postgresUpdateTransactionsRepository) {
         this.postgresUpdateTransactionsRepository =
             postgresUpdateTransactionsRepository
-        this.postgresGetUserByIdRepository = postgresGetUserByIdRepository
     }
-    async execute(params) {
-        // pegar o user pelo id
-        const user = await this.postgresGetUserByIdRepository.execute(
-            params.userId,
-        )
-
-        if (!user) {
-            throw new UserNotFounError()
-        }
-
+    async execute(transactionId, params) {
         // chamar o repositorio de update transaction
         const transaction =
-            await this.postgresUpdateTransactionsRepository.execute(params)
+            await this.postgresUpdateTransactionsRepository.execute(
+                transactionId,
+                params,
+            )
 
         return transaction
     }
