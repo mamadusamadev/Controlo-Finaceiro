@@ -1,21 +1,28 @@
-import { iternaServerError, ok } from '../helpers/http.js'
 import { UserNotFounError } from '../../errors/user.js'
+import { iternaServerError, ok } from '../helpers/http.js'
 
 export class GetUserBalanceController {
-    constructor(getUserBalanceUseCase) {
+    constructor(getUserBalanceUseCase, getUserByIdUseCase) {
         this.getUserBalanceUseCase = getUserBalanceUseCase
+        this.getUserByIdUseCase = getUserByIdUseCase
     }
 
     async execute(httpRequest) {
         try {
             const userId = httpRequest.params.userId
+            const user = await this.getUserByIdUseCase.execute(userId)
 
             if (!userId) {
-                return UserNotFounError(userId)
+                throw new UserNotFounError()
             }
-            const balance = await this.getUserBalanceUseCase.execute(userId)
 
-            return ok({ balance })
+            if (!user) {
+                throw new UserNotFounError()
+            }
+
+            const results = await this.getUserBalanceUseCase.execute(userId)
+
+            return ok(results)
         } catch (error) {
             console.error(error)
 

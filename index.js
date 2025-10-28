@@ -80,6 +80,15 @@ app.delete('/api/transactions/:transactionId', async (req, res) => {
     res.status(statusCode).send(body)
 })
 
+app.get('/api/users/:userId/balance', async (req, res) => {
+    const { makeGetUserBalanceController } = await import(
+        './src/factories/controllers/user.js'
+    )
+    const getUserBalanceController = makeGetUserBalanceController()
+    const { statusCode, body } = await getUserBalanceController.execute(req)
+    res.status(statusCode).send(body)
+})
+
 app.listen(process.env.PORT, () =>
     console.log(`Server is runing in port ${process.env.PORT}`),
 )
