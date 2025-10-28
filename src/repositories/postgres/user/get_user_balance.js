@@ -6,6 +6,7 @@ export class PostgresGetUserBalanceRepository {
             `
             SELECT * FROM get_user_balance($1);
             `,
+            [userId],
         )
         return {
             userId,

@@ -1,0 +1,21 @@
+services:
+    postgres:
+        image: postgres:18
+        container_name: finance-app-postgresql
+        environment:
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: Raiyan
+            POSTGRES_DB: financeapp
+        ports:
+            - '5432:5432'
+        volumes:
+            - postgres-data:/var/lib/postgresql
+
+volumes:
+    postgres-data:
+
+# rodar o comando: docker-compose up --detach
+# para subir o container em segundo plano
+# para parar o container: docker-compose down
+# para acessar o terminal do container: docker exec -it finance-app-postgresql bash
+        # para acessar o banco de dados via terminal: psql -U root -d financeapp
