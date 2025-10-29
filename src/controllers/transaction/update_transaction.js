@@ -1,12 +1,12 @@
-import { EmailAllradyExisted } from '../../errors/index.js'
+import { UserNotFounError } from '../../errors/index.js'
 import {
     badRequest,
     iternaServerError,
     isValidUUID,
-    validateRequireFile,
     ok,
 } from '../helpers/index.js'
-
+import { updateTransactionSchema } from '../../schemas/index.js'
+import { ZodError } from 'zod'
 export class UpdateTransactionController {
     constructor(updateTransactionUseCase) {
         this.updateTransactionUseCase = updateTransactionUseCase
@@ -27,63 +27,8 @@ export class UpdateTransactionController {
                 return badRequest({ message: 'Invalid Transaction ID' })
             }
 
-            const allowedFields = ['name', 'date', 'amount', 'type']
-            const someFieldIsNotAllowed = Object.keys(params).some(
-                (field) => !allowedFields.includes(field),
-            )
-
-            if (someFieldIsNotAllowed) {
-                return validateRequireFile(params, allowedFields)
-            }
-
-            const hasEmptyAllowedField = Object.keys(params).some(
-                (field) =>
-                    allowedFields.includes(field) && params[field] === '',
-            )
-
-            if (hasEmptyAllowedField) {
-                return badRequest({
-                    message: 'Some provided field is empty',
-                })
-            }
-
-            if (params.amount) {
-                // Validar amount
-                const amount =
-                    typeof params.amount === 'string'
-                        ? parseFloat(params.amount)
-                        : params.amount
-
-                if (isNaN(amount) || amount <= 0) {
-                    return badRequest({
-                        message: 'The amount must be greater than 0.',
-                    })
-                }
-
-                // Validar casas decimais (máximo 2)
-                const decimalPlaces = (amount.toString().split('.')[1] || '')
-                    .length
-                if (decimalPlaces > 2) {
-                    return badRequest({
-                        message:
-                            'The amount must have at most 2 decimal places.',
-                    })
-                }
-            }
-
-            // verificar type
-            if (params.type) {
-                const type = params.type.trim().toUpperCase()
-                const typeValid = ['EARNING', 'EXPENSE', 'INVESTMENT'].includes(
-                    type,
-                )
-                if (!typeValid) {
-                    return badRequest({
-                        message:
-                            'The transaction type must be "EARNING", "EXPENSE", or "INVESTMENT"',
-                    })
-                }
-            }
+            // validar os dados de entrada
+            await updateTransactionSchema.parseAsync(params)
 
             // chamar o Use Case para atualizar a transação
             const transaction = await this.updateTransactionUseCase.execute(
@@ -99,9 +44,15 @@ export class UpdateTransactionController {
 
             return ok(transaction)
         } catch (error) {
-            if (error instanceof EmailAllradyExisted) {
+            if (error instanceof ZodError) {
+                return badRequest({
+                    message: error.issues[0].message,
+                })
+            }
+            if (error instanceof UserNotFounError) {
                 return badRequest({ message: error.message })
             }
+
             console.log(error)
             return iternaServerError({
                 message: 'Internal server error',

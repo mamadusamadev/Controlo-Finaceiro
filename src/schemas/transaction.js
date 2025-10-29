@@ -12,13 +12,43 @@ export const createTransactionSchema = z.object({
             (value) => {
                 const decimalPlaces = (value.toString().split('.')[1] || '')
                     .length
-                return decimalPlaces <= 2 // Retorna true/false
+                return decimalPlaces <= 2
             },
             {
                 message: 'The amount must have at most 2 decimal places.',
             },
         ),
     type: z.enum(['EARNING', 'EXPENSE', 'INVESTMENT'], {
-        error: 'Type must be one of: EARNING, EXPENSE, INVESTMENT.',
+        error: {
+            message: 'Type must be one of: EARNING, EXPENSE, INVESTMENT.',
+        },
     }),
+})
+
+export const updateTransaction = z.object({
+    name: z.string().min(1, { message: 'Name is required.' }),
+    date: z.coerce.date({ invalid_type_error: 'Date must be a valid date.' }),
+    amount: z
+        .number({ invalid_type_error: 'Amount must be a number.' }) // ✅ Mudança aqui
+        .positive({ message: 'Amount must be greater than 0.' })
+        .min(1, { message: 'Amount must be greater than 0' })
+        .refine(
+            (value) => {
+                const decimalPlaces = (value.toString().split('.')[1] || '')
+                    .length
+                return decimalPlaces <= 2
+            },
+            {
+                message: 'The amount must have at most 2 decimal places.',
+            },
+        ),
+    type: z.enum(['EARNING', 'EXPENSE', 'INVESTMENT'], {
+        error: {
+            message: 'Type must be one of: EARNING, EXPENSE, INVESTMENT.',
+        },
+    }),
+})
+
+export const updateTransactionSchema = updateTransaction.partial().strict({
+    message: 'the provided data contains invalid fields',
 })
