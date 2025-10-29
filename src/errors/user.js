@@ -8,6 +8,6 @@ export class EmailAllradyExisted extends Error {
 export class UserNotFounError extends Error {
     constructor(userId) {
         super(`The user with id: ${userId} Not Found`)
-        this.name = UserNotFounError
+        this.name = 'UserNotFounError'
     }
 }

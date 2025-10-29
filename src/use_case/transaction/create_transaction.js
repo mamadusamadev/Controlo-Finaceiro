@@ -1,4 +1,4 @@
-import { EmailAllradyExisted } from '../../errors/user.js'
+import { UserNotFounError } from '../../errors/index.js'
 import { v4 as uuidv4 } from 'uuid'
 
 export class CreateTransactionUseCase {
@@ -18,7 +18,7 @@ export class CreateTransactionUseCase {
         const user = await this.postgresGetUserByIdRepository.execute(userId)
 
         if (!user) {
-            throw new EmailAllradyExisted()
+            throw new UserNotFounError(userId)
         }
 
         // Gerar id de transactionId

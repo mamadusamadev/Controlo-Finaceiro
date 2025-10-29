@@ -1,7 +1,8 @@
-import validator from 'validator'
 import { badRequest, iternaServerError, notFound, ok } from '../helpers/http.js'
 import { EmailAllradyExisted } from '../../errors/user.js'
 
+import { updateUserSchema } from '../../schemas/index.js'
+import { ZodError } from 'zod'
 export class UpdateUserController {
     constructor(updateUserUsecase) {
         this.updateUserUseCase = updateUserUsecase
@@ -17,55 +18,9 @@ export class UpdateUserController {
                     message: 'The User is Not Found',
                 })
             }
+            // validar os dados de entrada usando o zod
 
-            const allowedFields = [
-                'first_name',
-                'last_name',
-                'email',
-                'password',
-            ]
-
-            const someFieldIsNotAllowed = Object.keys(updateUserParams).some(
-                (field) => !allowedFields.includes(field),
-            )
-
-            if (someFieldIsNotAllowed) {
-                return badRequest({
-                    message: 'Some Provide Field is not allowed ',
-                })
-            }
-
-            const hasEmptyAllowedField = Object.keys(updateUserParams).some(
-                (field) =>
-                    allowedFields.includes(field) &&
-                    updateUserParams[field] === '',
-            )
-
-            if (hasEmptyAllowedField) {
-                return badRequest({
-                    message: 'Some provided field is empty',
-                })
-            }
-
-            if (updateUserParams.password) {
-                const passwordIsNotValed = updateUserParams.password.length < 6
-
-                if (passwordIsNotValed) {
-                    return badRequest({
-                        message: `Palavra passe deve ser maior ou igual a 6 caracteres`,
-                    })
-                }
-            }
-
-            if (updateUserParams.email) {
-                const emailIsValed = validator.isEmail(updateUserParams.email)
-                const emailPassed = updateUserParams.email
-                if (!emailIsValed) {
-                    return badRequest({
-                        message: `Invalid email ${emailPassed}, please provide a valid one`,
-                    })
-                }
-            }
+            await updateUserSchema.parseAsync(updateUserParams)
 
             // chamar use case para executar
 
@@ -81,6 +36,21 @@ export class UpdateUserController {
             }
             return ok(updateUser)
         } catch (error) {
+            if (error instanceof ZodError) {
+                // Verificar se o erro é de campo não reconhecido (strict mode)
+                const hasUnrecognizedKeys = error.issues.some(
+                    (issue) => issue.code === 'unrecognized_keys',
+                )
+
+                if (hasUnrecognizedKeys) {
+                    return badRequest({
+                        message: 'The provided data contains invalid fields',
+                    })
+                }
+                return badRequest({
+                    message: error.issues[0].message,
+                })
+            }
             if (error instanceof EmailAllradyExisted) {
                 return badRequest({ message: error.message })
             }
