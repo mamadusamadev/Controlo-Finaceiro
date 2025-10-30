@@ -13,11 +13,11 @@ export class GetUserBalanceController {
             const user = await this.getUserByIdUseCase.execute(userId)
 
             if (!userId) {
-                throw new UserNotFounError()
+                throw new UserNotFounError(userId)
             }
 
             if (!user) {
-                throw new UserNotFounError()
+                throw new UserNotFounError(userId)
             }
 
             const results = await this.getUserBalanceUseCase.execute(userId)

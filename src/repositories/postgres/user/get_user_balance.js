@@ -1,16 +1,46 @@
-import { PostgresHelper } from '../../../db/postgres/helper.js'
+import { prisma } from '../../../../prisma/prisma.js'
 
 export class PostgresGetUserBalanceRepository {
     async execute(userId) {
-        const balance = await PostgresHelper.query(
-            `
-            SELECT * FROM get_user_balance($1);
-            `,
-            [userId],
-        )
+        const totalExpenses = await prisma.transaction.aggregate({
+            where: {
+                user_id: userId,
+                type: 'EXPENSE',
+            },
+            _sum: {
+                amount: true,
+            },
+        })
+        const totalEarnings = await prisma.transaction.aggregate({
+            where: {
+                user_id: userId,
+                type: 'EARNING',
+            },
+            _sum: {
+                amount: true,
+            },
+        })
+        const tottalInvestments = await prisma.transaction.aggregate({
+            where: {
+                user_id: userId,
+                type: 'INVESTMENT',
+            },
+            _sum: {
+                amount: true,
+            },
+        })
+
+        const expenses = totalExpenses._sum.amount || 0
+        const earnings = totalEarnings._sum.amount || 0
+        const investments = tottalInvestments._sum.amount || 0
+
+        const balance = earnings - expenses - investments
+
         return {
-            userId,
-            ...balance[0],
+            totalExpenses: expenses,
+            totalEarnings: earnings,
+            tottalInvestments: investments,
+            balance,
         }
     }
 }
