@@ -11,22 +11,23 @@ export class UpdateUserUsecase {
     }
 
     async execute(userId, updateUserParams) {
-        // se o email estiver sendo atualizado, verifica se ele está sendo em uso.
+        // Só verifica o email se ele estiver sendo atualizado
+        if (updateUserParams.email) {
+            const userWithProvidEmail =
+                await this.postgresGetUserByEmailRepository.execute(
+                    updateUserParams.email,
+                )
 
-        const userWithProvidEmail =
-            await this.postgresGetUserByEmailRepository.execute(
-                updateUserParams.email,
-            )
-
-        if (userWithProvidEmail && userWithProvidEmail.id !== userId) {
-            throw new EmailAllradyExisted()
+            if (userWithProvidEmail && userWithProvidEmail.id !== userId) {
+                throw new EmailAllradyExisted()
+            }
         }
 
         const user = {
             ...updateUserParams,
         }
 
-        // se a senha estiver sendo atualiazado criptografá-la
+        // se a senha estiver sendo atualizada, criptografá-la
         if (updateUserParams.password) {
             const hashedPassword = await bcrypt.hash(
                 updateUserParams.password,
@@ -37,7 +38,6 @@ export class UpdateUserUsecase {
         }
 
         // chamar repository para atualizar usuario
-
         const updateUser = await this.postgresUpdateUserRepository.execute(
             userId,
             user,
